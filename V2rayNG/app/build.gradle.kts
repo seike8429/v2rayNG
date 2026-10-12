@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.v2ray.ang"
-    compileSdk = 37
+    namespace = "com.spidervpn.app"
+    compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.v2ray.ang"
+        applicationId = "com.spidervpn.app"
         minSdk = 24
-        targetSdk = 37
+        targetSdk = 35
         versionCode = 751
         versionName = "2.3.11"
 

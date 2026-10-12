@@ -1,0 +1,54 @@
+name: Build SpiderVPN APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v4
+      with:
+        cmdline-tools-version: '11076708'
+        packages: 'platforms;android-35 build-tools;34.0.0 platform-tools'
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Download libv2ray AAR
+      run: |
+        mkdir -p V2rayNG/app/libs
+        cd AndroidLibXrayLite
+        TAG=$(git describe --tags --abbrev=0)
+        echo "Using tag: $TAG"
+        cd ..
+        curl -sL -o V2rayNG/app/libs/libv2ray.aar "https://github.com/2dust/AndroidLibXrayLite/releases/download/${TAG}/libv2ray.aar"
+        ls -lh V2rayNG/app/libs/
+
+    - name: Build Debug APK
+      run: |
+        cd V2rayNG
+        echo "sdk.dir=${ANDROID_HOME}" > local.properties
+        chmod +x gradlew
+        ./gradlew assemblePlaystoreDebug --console=plain
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      if: ${{ success() }}
+      with:
+        name: SpiderVPN-APK
+        path: V2rayNG/app/build/outputs/apk/playstore/debug/*.apk
