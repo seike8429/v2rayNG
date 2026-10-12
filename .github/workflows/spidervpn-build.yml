@@ -14,8 +14,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
+
+    - name: Clone Xray lib source
+      run: |
+        rm -rf AndroidLibXrayLite
+        git clone --depth 1 https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v4
