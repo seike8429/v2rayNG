@@ -30,7 +30,7 @@ jobs:
     - name: Download libv2ray AAR
       run: |
         mkdir -p V2rayNG/app/libs
-        TAG=$(curl -sL https://api.github.com/repos/2dust/AndroidLibXrayLite/releases/latest | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
+        TAG="v26.9.30"
         echo "Using tag: $TAG"
         curl -sL -o V2rayNG/app/libs/libv2ray.aar "https://github.com/2dust/AndroidLibXrayLite/releases/download/${TAG}/libv2ray.aar"
         ls -lh V2rayNG/app/libs/
