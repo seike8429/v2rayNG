@@ -15,11 +15,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Clone Xray lib source
-      run: |
-        rm -rf AndroidLibXrayLite
-        git clone --depth 1 https://github.com/2dust/AndroidLibXrayLite.git AndroidLibXrayLite
-
     - name: Setup Android SDK
       uses: android-actions/setup-android@v4
       with:
@@ -35,10 +30,8 @@ jobs:
     - name: Download libv2ray AAR
       run: |
         mkdir -p V2rayNG/app/libs
-        cd AndroidLibXrayLite
-        TAG=$(git describe --tags --abbrev=0)
+        TAG=$(curl -sL https://api.github.com/repos/2dust/AndroidLibXrayLite/releases/latest | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'])")
         echo "Using tag: $TAG"
-        cd ..
         curl -sL -o V2rayNG/app/libs/libv2ray.aar "https://github.com/2dust/AndroidLibXrayLite/releases/download/${TAG}/libv2ray.aar"
         ls -lh V2rayNG/app/libs/
 
