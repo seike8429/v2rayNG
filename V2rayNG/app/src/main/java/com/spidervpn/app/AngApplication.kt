@@ -46,7 +46,11 @@ class AngApplication : Application() {
         // Ensure critical preference defaults are present in MMKV early
         SettingsManager.initApp(this)
 
-        DefaultProfileManager.ensureDefaultProfile()
+        try {
+            DefaultProfileManager.ensureDefaultProfile()
+        } catch (e: Exception) {
+            android.widget.Toast.makeText(this, "Init error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+        }
 
         // Initialize theme state from MMKV
         ThemeManager.refresh()
