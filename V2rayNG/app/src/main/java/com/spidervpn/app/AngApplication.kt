@@ -36,6 +36,26 @@ class AngApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // DEBUG: capture crash to file
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                val sb = StringBuilder()
+                sb.append(throwable.toString()).append("\n")
+                for (el in throwable.stackTrace) sb.append("    at ").append(el.toString()).append("\n")
+                var cause = throwable.cause
+                while (cause != null) {
+                    sb.append("Caused by: ").append(cause.toString()).append("\n")
+                    for (el in cause.stackTrace) sb.append("    at ").append(el.toString()).append("\n")
+                    cause = cause.cause
+                }
+                getExternalFilesDir(null)?.let { dir ->
+                    java.io.File(dir, "spidervpn_crash.txt").writeText(sb.toString())
+                }
+            } catch (_: Exception) { }
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
+
         MmkvManager.initialize(this)
 
         AppLocaleManager.initialize(this)
