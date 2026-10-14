@@ -819,7 +819,7 @@ class MainViewModel(
         }
         val guid = uiState.value.selectedGuid ?: return
         val profile = dataSource.decodeServerConfig(guid) ?: return
-        if (profile.password.isNotEmpty()) {
+        if (!profile.password.isNullOrEmpty()) {
             profile.password = ""
             dataSource.encodeServerConfig(guid, profile)
         }

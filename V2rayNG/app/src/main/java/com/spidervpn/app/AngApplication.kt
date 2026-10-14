@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.spidervpn.app.AppConfig.ANG_PACKAGE
 import com.spidervpn.app.handler.AppLocaleManager
+import com.spidervpn.app.handler.DefaultProfileManager
 import com.spidervpn.app.handler.MmkvManager
 import com.spidervpn.app.handler.SettingsManager
 import com.spidervpn.app.ui.compose.ThemeManager

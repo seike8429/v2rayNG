@@ -458,7 +458,7 @@ fun SpiderMascot(
 /** Small location-pin glyph for the location card. */
 @Composable
 private fun LocationPinIcon(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier.semantics { contentDescription = null }) {
+    Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
         val cx = w / 2f
@@ -631,7 +631,7 @@ private fun SpiderNavItem(
 /** Shield-with-check glyph for the VPN tab. */
 @Composable
 private fun VpnTabIcon(modifier: Modifier = Modifier, tint: Color) {
-    Canvas(modifier = modifier.semantics { contentDescription = null }) {
+    Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
         val shield = Path().apply {
@@ -656,7 +656,7 @@ private fun VpnTabIcon(modifier: Modifier = Modifier, tint: Color) {
 /** Gear glyph for the Settings tab. */
 @Composable
 private fun SettingsTabIcon(modifier: Modifier = Modifier, tint: Color) {
-    Canvas(modifier = modifier.semantics { contentDescription = null }) {
+    Canvas(modifier = modifier) {
         val w = size.width
         val cx = w / 2f
         val cy = size.height / 2f
