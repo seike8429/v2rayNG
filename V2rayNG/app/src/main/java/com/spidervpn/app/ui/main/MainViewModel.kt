@@ -18,6 +18,7 @@ import com.spidervpn.app.extension.delay
 import com.spidervpn.app.extension.isComplexType
 import com.spidervpn.app.extension.matchesPattern
 import com.spidervpn.app.extension.moveItem
+import com.spidervpn.app.handler.DefaultProfileManager
 import com.spidervpn.app.ui.base.BaseViewModel
 import com.spidervpn.app.util.LogUtil
 import kotlinx.coroutines.CancellationException
@@ -799,7 +800,17 @@ class MainViewModel(
             _uiState.update { it.copy(uuidInvalid = true) }
             return
         }
-        val guid = uiState.value.selectedGuid ?: return
+        // Ensure the default profile exists (safety: if selectedGuid is null,
+        // the profile may not have been created yet)
+        var guid = uiState.value.selectedGuid
+        if (guid.isNullOrEmpty()) {
+            DefaultProfileManager.ensureDefaultProfile()
+            guid = dataSource.getSelectServer()
+            if (!guid.isNullOrEmpty()) {
+                _uiState.update { it.copy(selectedGuid = guid) }
+            }
+        }
+        guid ?: return
         val profile = dataSource.decodeServerConfig(guid) ?: return
         if (profile.password != uuid) {
             profile.password = uuid
