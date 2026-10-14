@@ -4,40 +4,58 @@ import com.spidervpn.app.dto.entities.ProfileItem
 import com.spidervpn.app.enums.EConfigType
 import com.spidervpn.app.util.Utils
 
+/**
+ * Injects the pre-configured SpiderVPN server profile on first launch.
+ * Server settings are baked in; the UUID (password) is left empty for the
+ * customer to enter. DNS is forced through the tunnel to minimize DNS errors.
+ */
 object DefaultProfileManager {
-    private const val PREF_DONE = "spidervpn_default_profile_done"
+
+    private const val PREF_DEFAULT_PROFILE_DONE = "spidervpn_default_profile_done"
+
+    // Pre-configured server (from Saya's V2BOX screenshot; UUID left blank)
+    private const val SERVER = "cow.uninoka.uk"
+    private const val PORT = "443"
+    private const val NETWORK = "ws"
+    private const val WS_PATH = "/"
+    private const val SECURITY = "tls"
+    private const val SNI = "cow.uninoka.uk"
+    private const val ENCRYPTION = "none"
+
     fun ensureDefaultProfile() {
-        // Repair duplicates from earlier runs (LazyColumn needs unique keys)
-        val cur = MmkvManager.decodeServerList("")
-        val fixed = cur.distinct()
-        if (fixed.size != cur.size) {
-            MmkvManager.encodeServerList(fixed.toMutableList(), "")
+        if (MmkvManager.decodeSettingsBool(PREF_DEFAULT_PROFILE_DONE)) {
+            return
         }
-        if (MmkvManager.decodeSettingsBool(PREF_DONE)) return
+        // Only inject when the user has no servers at all (fresh install)
         if (MmkvManager.decodeAllServerList().isNotEmpty()) {
-            MmkvManager.encodeSettings(PREF_DONE, true); return
+            MmkvManager.encodeSettings(PREF_DEFAULT_PROFILE_DONE, true)
+            return
         }
+
         val profile = ProfileItem.create(EConfigType.VLESS).apply {
             remarks = "SpiderVPN"
-            server = "cow.uninoka.uk"
-            serverPort = "443"
-            password = ""
-            method = "none"
-            network = "ws"
-            path = "/"
-            security = "tls"
-            sni = "cow.uninoka.uk"
+            server = SERVER
+            serverPort = PORT
+            password = "" // customer enters their own UUID
+            method = ENCRYPTION
+            network = NETWORK
+            path = WS_PATH
+            security = SECURITY
+            sni = SNI
             insecure = false
+            // DPI resistance: uTLS Chrome fingerprint (TLS looks like real Chrome)
             fingerPrint = "chrome"
         }
+
         val guid = Utils.getUuid()
         MmkvManager.encodeServerConfig(guid, profile)
-        val list = MmkvManager.decodeServerList("").distinct().toMutableList()
-        if (!list.contains(guid)) {
-            list.add(guid)
-        }
+        // Add to the default (ungrouped) server list
+        val list = MmkvManager.decodeServerList("")
+        list.add(guid)
         MmkvManager.encodeServerList(list, "")
+        // Select it as the active server
         MmkvManager.setSelectServer(guid)
-        MmkvManager.encodeSettings(PREF_DONE, true)
+
+        MmkvManager.encodeSettings(PREF_DEFAULT_PROFILE_DONE, true)
     }
 }

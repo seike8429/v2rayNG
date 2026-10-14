@@ -561,4 +561,22 @@
     <string name="connection_test_empty_message">دووسمندی نؽ</string>
     <string name="value_unknown">نا موشخس</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">UUID خود را اینجا وارد کنید</string>
+    <string name="spider_uuid_invalid">قالب UUID نامعتبر است</string>
+    <string name="spider_connect">اتصال</string>
+    <string name="spider_disconnect">قطع اتصال</string>
+    <string name="spider_subtitle">UUID خود را وارد کنید، سپس اتصال را بزنید</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">تنظیمات</string>
+    <string name="spider_connected">متصل</string>
+    <string name="spider_disconnected">غیرمتصل</string>
+    <string name="spider_duration">مدت اتصال</string>
+    <string name="spider_location_title">موقعیت VPN شما</string>
+    <string name="spider_about">درباره</string>
+    <string name="spider_version">نسخه</string>
+    <string name="spider_about_text">SpiderVPN یک کلاینت ساده VLESS است. UUID خود را در برگه VPN وارد کنید و دکمه اتصال را بزنید.</string>
+    <string name="spider_reset_uuid">بازنشانی UUID</string>
+    <string name="spider_reset_while_connected">ابتدا قطع اتصال کنید سپس UUID را بازنشانی کنید</string>
+
 </resources>

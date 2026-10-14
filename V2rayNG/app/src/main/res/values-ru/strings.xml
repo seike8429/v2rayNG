@@ -565,4 +565,22 @@
     <string name="connection_test_empty_message">подробности отсутствуют</string>
     <string name="value_unknown">неизвестно</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">Вставьте ваш UUID сюда</string>
+    <string name="spider_uuid_invalid">Неверный формат UUID</string>
+    <string name="spider_connect">Подключить</string>
+    <string name="spider_disconnect">Отключить</string>
+    <string name="spider_subtitle">Введите ваш UUID и нажмите Подключить</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">Настройки</string>
+    <string name="spider_connected">Подключено</string>
+    <string name="spider_disconnected">Отключено</string>
+    <string name="spider_duration">Время подключения</string>
+    <string name="spider_location_title">Ваше местоположение VPN</string>
+    <string name="spider_about">О приложении</string>
+    <string name="spider_version">Версия</string>
+    <string name="spider_about_text">SpiderVPN — простой VLESS VPN-клиент. Вставьте UUID на вкладке VPN и нажмите кнопку подключения.</string>
+    <string name="spider_reset_uuid">Сбросить UUID</string>
+    <string name="spider_reset_while_connected">Сначала отключитесь, чтобы сбросить UUID</string>
+
 </resources>

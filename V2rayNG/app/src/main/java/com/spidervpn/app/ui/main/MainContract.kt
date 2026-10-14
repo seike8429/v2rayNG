@@ -26,7 +26,11 @@ data class MainUiState(
     val locateTarget: LocateTarget? = null,
     val confirmRemove: Boolean = false,
     val doubleColumnDisplay: Boolean = false,
-    val shareQRCodeBitmap: android.graphics.Bitmap? = null
+    val shareQRCodeBitmap: android.graphics.Bitmap? = null,
+    /** UUID persisted on the selected VLESS profile (customer-editable). */
+    val uuid: String = "",
+    /** True when the last UUID save attempt failed validation. */
+    val uuidInvalid: Boolean = false
 )
 
 /**
@@ -67,4 +71,13 @@ sealed interface MainAction {
     data class ImportBatchConfig(val configText: String) : MainAction
 
     data object LocateHandled : MainAction
+
+    /** Save the customer-typed UUID onto the selected VLESS profile. */
+    data class UpdateUuid(val uuid: String) : MainAction
+
+    /** Clear the UUID validation error (user edited the field). */
+    data object UuidEdited : MainAction
+
+    /** Clear the customer-typed UUID (Settings tab). Refused while connected. */
+    data object ResetUuid : MainAction
 }

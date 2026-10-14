@@ -559,4 +559,22 @@
     <string name="connection_test_empty_message">không có thông tin chi tiết</string>
     <string name="value_unknown">không xác định</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">Dán UUID của bạn vào đây</string>
+    <string name="spider_uuid_invalid">Định dạng UUID không hợp lệ</string>
+    <string name="spider_connect">Kết nối</string>
+    <string name="spider_disconnect">Ngắt kết nối</string>
+    <string name="spider_subtitle">Nhập UUID của bạn, sau đó nhấn Kết nối</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">Cài đặt</string>
+    <string name="spider_connected">Đã kết nối</string>
+    <string name="spider_disconnected">Chưa kết nối</string>
+    <string name="spider_duration">Thời gian kết nối</string>
+    <string name="spider_location_title">Vị trí VPN của bạn</string>
+    <string name="spider_about">Giới thiệu</string>
+    <string name="spider_version">Phiên bản</string>
+    <string name="spider_about_text">SpiderVPN là ứng dụng VPN VLESS đơn giản. Dán UUID của bạn trong tab VPN, rồi nhấn nút kết nối.</string>
+    <string name="spider_reset_uuid">Đặt lại UUID</string>
+    <string name="spider_reset_while_connected">Ngắt kết nối trước khi đặt lại UUID</string>
+
 </resources>

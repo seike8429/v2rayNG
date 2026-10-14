@@ -559,4 +559,22 @@
     <string name="connection_test_empty_message">沒有詳細資訊</string>
     <string name="value_unknown">未知</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">在此貼上您的 UUID</string>
+    <string name="spider_uuid_invalid">UUID 格式無效</string>
+    <string name="spider_connect">連線</string>
+    <string name="spider_disconnect">中斷連線</string>
+    <string name="spider_subtitle">輸入您的 UUID，然後點擊連線</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">設定</string>
+    <string name="spider_connected">已連線</string>
+    <string name="spider_disconnected">未連線</string>
+    <string name="spider_duration">連線時間</string>
+    <string name="spider_location_title">您的 VPN 位置</string>
+    <string name="spider_about">關於</string>
+    <string name="spider_version">版本</string>
+    <string name="spider_about_text">SpiderVPN 是一個簡單的 VLESS VPN 客戶端。在 VPN 頁面貼上您的 UUID，然後點擊連線按鈕。</string>
+    <string name="spider_reset_uuid">重置 UUID</string>
+    <string name="spider_reset_while_connected">請先中斷連線再重置 UUID</string>
+
 </resources>

@@ -562,4 +562,22 @@
     <string name="connection_test_empty_message">ətraflı məlumat yoxdur</string>
     <string name="value_unknown">naməlum</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">UUID-nizi bura yapışdırın</string>
+    <string name="spider_uuid_invalid">UUID formatı yanlışdır</string>
+    <string name="spider_connect">Qoşul</string>
+    <string name="spider_disconnect">Ayır</string>
+    <string name="spider_subtitle">UUID-nizi daxil edin, sonra Qoşul düyməsini basın</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">Tənzimləmələr</string>
+    <string name="spider_connected">Qoşuldu</string>
+    <string name="spider_disconnected">Qoşulmayıb</string>
+    <string name="spider_duration">Qoşulma müddəti</string>
+    <string name="spider_location_title">VPN məkanınız</string>
+    <string name="spider_about">Haqqında</string>
+    <string name="spider_version">Versiya</string>
+    <string name="spider_about_text">SpiderVPN sadə VLESS VPN müştərisidir. UUID-nizi VPN sekmesinde yapışdırın və qoşulma düyməsini basın.</string>
+    <string name="spider_reset_uuid">UUID-ni sıfırla</string>
+    <string name="spider_reset_while_connected">UUID-ni sıfırlamaq üçün əvvəlcə əlaqəni kəsin</string>
+
 </resources>

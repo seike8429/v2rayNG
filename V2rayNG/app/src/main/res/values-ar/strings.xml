@@ -569,4 +569,22 @@
     <string name="connection_test_empty_message">لا تتوفر تفاصيل</string>
     <string name="value_unknown">غير معروف</string>
 
+    <!-- SpiderVPN simplified home screen -->
+    <string name="spider_uuid_hint">الصق UUID الخاص بك هنا</string>
+    <string name="spider_uuid_invalid">تنسيق UUID غير صالح</string>
+    <string name="spider_connect">اتصال</string>
+    <string name="spider_disconnect">قطع الاتصال</string>
+    <string name="spider_subtitle">أدخل UUID الخاص بك، ثم اضغط اتصال</string>
+    <string name="spider_tab_vpn">VPN</string>
+    <string name="spider_tab_settings">الإعدادات</string>
+    <string name="spider_connected">متصل</string>
+    <string name="spider_disconnected">غير متصل</string>
+    <string name="spider_duration">مدة الاتصال</string>
+    <string name="spider_location_title">موقع VPN الخاص بك</string>
+    <string name="spider_about">حول</string>
+    <string name="spider_version">الإصدار</string>
+    <string name="spider_about_text">SpiderVPN هو عميل VLESS بسيط. الصق UUID الخاص بك في تبويب VPN ثم اضغط زر الاتصال.</string>
+    <string name="spider_reset_uuid">إعادة تعيين UUID</string>
+    <string name="spider_reset_while_connected">افصل الاتصال أولاً لإعادة تعيين UUID</string>
+
 </resources>

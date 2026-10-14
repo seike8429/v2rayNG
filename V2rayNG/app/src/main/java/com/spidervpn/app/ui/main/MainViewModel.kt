@@ -80,6 +80,9 @@ class MainViewModel(
         MainUiState(
             selectedGroupId = dataSource.getSelectedSubscriptionId(),
             selectedGuid = dataSource.getSelectServer(),
+            uuid = dataSource.getSelectServer()?.let {
+                dataSource.decodeServerConfig(it)?.password.orEmpty()
+            }.orEmpty(),
             confirmRemove = dataSource.getConfirmRemove(),
             doubleColumnDisplay = dataSource.getDoubleColumnDisplay()
         )
@@ -291,6 +294,9 @@ class MainViewModel(
             is MainAction.Search -> filterConfig(action.query)
             is MainAction.ImportBatchConfig -> importBatchConfig(action.configText)
             MainAction.LocateHandled -> consumeLocateTarget()
+            is MainAction.UpdateUuid -> updateUuid(action.uuid)
+            MainAction.UuidEdited -> _uiState.update { it.copy(uuidInvalid = false) }
+            MainAction.ResetUuid -> resetUuid()
             is MainAction.ShareQRCode -> {
                 val bitmap = dataSource.share2QRCode(action.guid)
                 _uiState.update { it.copy(shareQRCodeBitmap = bitmap) }
@@ -466,6 +472,9 @@ class MainViewModel(
                         groups = groups,
                         selectedGroupId = selectedGroup,
                         selectedGuid = dataSource.getSelectServer(),
+                        uuid = dataSource.getSelectServer()?.let { guid ->
+                            dataSource.decodeServerConfig(guid)?.password.orEmpty()
+                        }.orEmpty(),
                     )
                 }
                 groups.forEach { mutableServerGroupState(it.id) }
@@ -770,11 +779,51 @@ class MainViewModel(
 
     fun updateSelectedGuid(guid: String) {
         dataSource.setSelectServer(guid)
-        _uiState.update { it.copy(selectedGuid = guid) }
+        val uuid = dataSource.decodeServerConfig(guid)?.password.orEmpty()
+        _uiState.update { it.copy(selectedGuid = guid, uuid = uuid, uuidInvalid = false) }
     }
 
     fun refreshSelectedGuid() {
-        _uiState.update { it.copy(selectedGuid = dataSource.getSelectServer()) }
+        val guid = dataSource.getSelectServer()
+        val uuid = guid?.let { dataSource.decodeServerConfig(it)?.password.orEmpty() }.orEmpty()
+        _uiState.update { it.copy(selectedGuid = guid, uuid = uuid, uuidInvalid = false) }
+    }
+
+    /**
+     * Persist the customer-typed UUID onto the selected VLESS profile.
+     * Runs synchronously: a single MMKV encode, matching BaseServerActivity.saveServer.
+     */
+    fun updateUuid(rawUuid: String) {
+        val uuid = rawUuid.trim()
+        if (!UuidValidator.isValid(uuid)) {
+            _uiState.update { it.copy(uuidInvalid = true) }
+            return
+        }
+        val guid = uiState.value.selectedGuid ?: return
+        val profile = dataSource.decodeServerConfig(guid) ?: return
+        if (profile.password != uuid) {
+            profile.password = uuid
+            dataSource.encodeServerConfig(guid, profile)
+        }
+        _uiState.update { it.copy(uuid = uuid, uuidInvalid = false) }
+    }
+
+    /**
+     * Clear the customer-typed UUID (Settings tab). Refused while the VPN is
+     * running so the stored profile is never left inconsistent mid-session.
+     */
+    fun resetUuid() {
+        if (uiState.value.isRunning) {
+            toast(dataSource.getString(R.string.spider_reset_while_connected))
+            return
+        }
+        val guid = uiState.value.selectedGuid ?: return
+        val profile = dataSource.decodeServerConfig(guid) ?: return
+        if (profile.password.isNotEmpty()) {
+            profile.password = ""
+            dataSource.encodeServerConfig(guid, profile)
+        }
+        _uiState.update { it.copy(uuid = "", uuidInvalid = false) }
     }
 
     fun removeServerAndRefresh(guid: String) {
