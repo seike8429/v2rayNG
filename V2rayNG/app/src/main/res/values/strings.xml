@@ -581,5 +581,7 @@
     <string name="spider_about_text">SpiderVPN is a simple VLESS VPN client. Paste your UUID on the VPN tab, then tap the connect button.</string>
     <string name="spider_reset_uuid">Reset UUID</string>
     <string name="spider_reset_while_connected">Disconnect first to reset the UUID</string>
+    <string name="spider_save_uuid">Save UUID</string>
+    <string name="spider_uuid_saved">UUID saved</string>
 
 </resources>

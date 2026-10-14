@@ -31,6 +31,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -315,7 +317,24 @@ private fun SpiderVpnTab(
             )
         )
 
-        Spacer(Modifier.height(32.dp))
+        Spacer(Modifier.height(16.dp))
+
+        // Save UUID button: validates and persists UUID to the hidden profile.
+        OutlinedButton(
+            onClick = {
+                val text = uuidText.trim()
+                onAction(MainAction.UpdateUuid(text))
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = SpiderCyan
+            ),
+            border = BorderStroke(1.dp, SpiderCyan.copy(alpha = 0.5f))
+        ) {
+            Text(text = stringResource(R.string.spider_save_uuid))
+        }
+
+        Spacer(Modifier.height(8.dp))
 
         // Reset UUID button on first page.
         TextButton(

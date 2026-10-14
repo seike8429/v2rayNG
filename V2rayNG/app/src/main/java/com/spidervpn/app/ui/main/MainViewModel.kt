@@ -815,6 +815,7 @@ class MainViewModel(
         if (profile.password != uuid) {
             profile.password = uuid
             dataSource.encodeServerConfig(guid, profile)
+            toast(dataSource.getString(R.string.spider_uuid_saved))
         }
         _uiState.update { it.copy(uuid = uuid, uuidInvalid = false) }
     }
