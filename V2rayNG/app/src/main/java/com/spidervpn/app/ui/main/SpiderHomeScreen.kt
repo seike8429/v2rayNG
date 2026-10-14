@@ -35,6 +35,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -158,6 +159,8 @@ private fun SpiderVpnTab(
         if (text != uiState.uuid) {
             onAction(MainAction.UpdateUuid(text))
         }
+        // Hide UUID from the field after successful validation
+        uuidText = ""
         if (isRunning && text != uiState.uuid) {
             onAction(MainAction.RestartService)
         } else {
@@ -315,6 +318,19 @@ private fun SpiderVpnTab(
         )
 
         Spacer(Modifier.height(32.dp))
+
+        // Reset UUID button on first page.
+        TextButton(
+            onClick = { onAction(MainAction.ResetUuid) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.spider_reset_uuid),
+                color = SpiderTextDim
+            )
+        }
+
+        Spacer(Modifier.height(16.dp))
     }
 }
 
