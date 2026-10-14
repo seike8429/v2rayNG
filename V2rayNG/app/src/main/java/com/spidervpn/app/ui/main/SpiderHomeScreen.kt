@@ -159,8 +159,6 @@ private fun SpiderVpnTab(
         if (text != uiState.uuid) {
             onAction(MainAction.UpdateUuid(text))
         }
-        // Hide UUID from the field after successful validation
-        uuidText = ""
         if (isRunning && text != uiState.uuid) {
             onAction(MainAction.RestartService)
         } else {
