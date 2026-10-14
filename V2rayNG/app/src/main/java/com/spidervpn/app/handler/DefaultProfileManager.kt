@@ -23,7 +23,17 @@ object DefaultProfileManager {
     private const val ENCRYPTION = "none"
 
     fun ensureDefaultProfile() {
+        // Migration: clear chrome fingerprint from existing profiles
+        // (it caused connection failures; working config has no fingerprint)
         if (MmkvManager.decodeSettingsBool(PREF_DEFAULT_PROFILE_DONE)) {
+            val guid = MmkvManager.getSelectServer()
+            if (!guid.isNullOrEmpty()) {
+                val profile = MmkvManager.decodeServerConfig(guid)
+                if (profile != null && profile.fingerPrint == "chrome") {
+                    profile.fingerPrint = ""
+                    MmkvManager.encodeServerConfig(guid, profile)
+                }
+            }
             return
         }
         // Only inject when the user has no servers at all (fresh install)
@@ -43,8 +53,8 @@ object DefaultProfileManager {
             security = SECURITY
             sni = SNI
             insecure = false
-            // DPI resistance: uTLS Chrome fingerprint (TLS looks like real Chrome)
-            fingerPrint = "chrome"
+            // Fingerprint left empty to match working v2rayNG config
+            // (uTLS chrome fingerprint caused connection failures)
         }
 
         val guid = Utils.getUuid()
