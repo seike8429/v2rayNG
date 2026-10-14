@@ -298,6 +298,8 @@ class MainViewModel(
             is MainAction.UpdateUuid -> updateUuid(action.uuid)
             MainAction.UuidEdited -> _uiState.update { it.copy(uuidInvalid = false) }
             MainAction.ResetUuid -> resetUuid()
+            MainAction.RunDiagnostic -> runDiagnostic()
+            MainAction.DismissDiagnostic -> _uiState.update { it.copy(diagnostic = null) }
             is MainAction.ShareQRCode -> {
                 val bitmap = dataSource.share2QRCode(action.guid)
                 _uiState.update { it.copy(shareQRCodeBitmap = bitmap) }
@@ -836,6 +838,21 @@ class MainViewModel(
             dataSource.encodeServerConfig(guid, profile)
         }
         _uiState.update { it.copy(uuid = "", uuidInvalid = false) }
+    }
+
+    /**
+     * Run connection diagnostics. Ensures the profile exists first,
+     * then reports detailed status without exposing secrets.
+     */
+    fun runDiagnostic() {
+        viewModelScope.launch(ioDispatcher) {
+            // Ensure profile exists and is valid first
+            DefaultProfileManager.ensureDefaultProfile()
+            val diagnostic = DefaultProfileManager.runDiagnostic()
+            _uiState.update { it.copy(diagnostic = diagnostic) }
+            // Refresh UUID display in case profile was recreated
+            refreshSelectedGuid()
+        }
     }
 
     fun removeServerAndRefresh(guid: String) {

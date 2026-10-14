@@ -30,7 +30,9 @@ data class MainUiState(
     /** UUID persisted on the selected VLESS profile (customer-editable). */
     val uuid: String = "",
     /** True when the last UUID save attempt failed validation. */
-    val uuidInvalid: Boolean = false
+    val uuidInvalid: Boolean = false,
+    /** Diagnostic result from the Test button (null = not run yet). */
+    val diagnostic: com.spidervpn.app.handler.DefaultProfileManager.Diagnostic? = null
 )
 
 /**
@@ -80,4 +82,10 @@ sealed interface MainAction {
 
     /** Clear the customer-typed UUID (Settings tab). Refused while connected. */
     data object ResetUuid : MainAction
+
+    /** Run connection diagnostics and show the result (Test button). */
+    data object RunDiagnostic : MainAction
+
+    /** Dismiss the diagnostic result dialog. */
+    data object DismissDiagnostic : MainAction
 }

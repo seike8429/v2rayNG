@@ -5,13 +5,18 @@ import com.spidervpn.app.enums.EConfigType
 import com.spidervpn.app.util.Utils
 
 /**
- * Injects the pre-configured SpiderVPN server profile on first launch.
- * Server settings are baked in; the UUID (password) is left empty for the
- * customer to enter. DNS is forced through the tunnel to minimize DNS errors.
+ * Ensures the pre-configured SpiderVPN server profile always exists and is valid.
+ * Server settings are baked in; the UUID (password) is left for the customer to enter.
+ * DNS is forced through the tunnel to minimize DNS errors.
+ *
+ * Build #28: rewritten to ALWAYS verify/repair the profile on every launch,
+ * not just on first install. Finds the profile by stable remarks identity,
+ * repairs corrupted fields, deduplicates the server list, and ensures selection.
  */
 object DefaultProfileManager {
 
     private const val PREF_DEFAULT_PROFILE_DONE = "spidervpn_default_profile_done"
+    private const val PROFILE_REMARKS = "SpiderVPN"
 
     // Pre-configured server (from Saya's V2BOX screenshot; UUID left blank)
     private const val SERVER = "cow.uninoka.uk"
@@ -22,28 +27,55 @@ object DefaultProfileManager {
     private const val SNI = "cow.uninoka.uk"
     private const val ENCRYPTION = "none"
 
-    fun ensureDefaultProfile() {
-        // Migration: clear chrome fingerprint from existing profiles
-        // (it caused connection failures; working config has no fingerprint)
-        if (MmkvManager.decodeSettingsBool(PREF_DEFAULT_PROFILE_DONE)) {
-            val guid = MmkvManager.getSelectServer()
-            if (!guid.isNullOrEmpty()) {
-                val profile = MmkvManager.decodeServerConfig(guid)
-                if (profile != null && profile.fingerPrint == "chrome") {
-                    profile.fingerPrint = ""
-                    MmkvManager.encodeServerConfig(guid, profile)
-                }
-            }
-            return
-        }
-        // Only inject when the user has no servers at all (fresh install)
-        if (MmkvManager.decodeAllServerList().isNotEmpty()) {
-            MmkvManager.encodeSettings(PREF_DEFAULT_PROFILE_DONE, true)
-            return
-        }
+    /**
+     * Diagnostic result for the Test button. Contains no secrets.
+     */
+    data class Diagnostic(
+        val profileExists: Boolean,
+        val selectedGuidValid: Boolean,
+        val serverCorrect: Boolean,
+        val portCorrect: Boolean,
+        val tlsCorrect: Boolean,
+        val uuidPresent: Boolean,
+        val guid: String?,
+        val error: String?
+    ) {
+        val allOk: Boolean
+            get() = error == null && profileExists && selectedGuidValid &&
+                    serverCorrect && portCorrect && tlsCorrect && uuidPresent
+    }
 
+    /**
+     * Find the SpiderVPN profile GUID by remarks identity.
+     * Searches all server lists for a profile with remarks == "SpiderVPN".
+     */
+    private fun findSpiderVpnGuid(): String? {
+        // Check default (ungrouped) list
+        val defaultList = MmkvManager.decodeServerList("")
+        for (guid in defaultList) {
+            val profile = MmkvManager.decodeServerConfig(guid)
+            if (profile?.remarks == PROFILE_REMARKS) {
+                return guid
+            }
+        }
+        // Check all subscriptions/groups
+        val allGuids = MmkvManager.decodeAllServerList()
+        for (guid in allGuids) {
+            if (guid in defaultList) continue // already checked
+            val profile = MmkvManager.decodeServerConfig(guid)
+            if (profile?.remarks == PROFILE_REMARKS) {
+                return guid
+            }
+        }
+        return null
+    }
+
+    /**
+     * Create a fresh SpiderVPN profile with baked-in server settings.
+     */
+    private fun createProfile(): String {
         val profile = ProfileItem.create(EConfigType.VLESS).apply {
-            remarks = "SpiderVPN"
+            remarks = PROFILE_REMARKS
             server = SERVER
             serverPort = PORT
             password = "" // customer enters their own UUID
@@ -54,18 +86,135 @@ object DefaultProfileManager {
             sni = SNI
             insecure = false
             // Fingerprint left empty to match working v2rayNG config
-            // (uTLS chrome fingerprint caused connection failures)
         }
-
         val guid = Utils.getUuid()
         MmkvManager.encodeServerConfig(guid, profile)
-        // Add to the default (ungrouped) server list
-        val list = MmkvManager.decodeServerList("")
-        list.add(guid)
-        MmkvManager.encodeServerList(list, "")
-        // Select it as the active server
-        MmkvManager.setSelectServer(guid)
+        return guid
+    }
 
-        MmkvManager.encodeSettings(PREF_DEFAULT_PROFILE_DONE, true)
+    /**
+     * Repair a profile's server fields if they've been corrupted.
+     * Preserves the customer's UUID (password).
+     * Returns true if any field was repaired.
+     */
+    private fun repairProfile(guid: String): Boolean {
+        val profile = MmkvManager.decodeServerConfig(guid) ?: return false
+        var repaired = false
+        if (profile.server != SERVER) { profile.server = SERVER; repaired = true }
+        if (profile.serverPort != PORT) { profile.serverPort = PORT; repaired = true }
+        if (profile.network != NETWORK) { profile.network = NETWORK; repaired = true }
+        if (profile.path != WS_PATH) { profile.path = WS_PATH; repaired = true }
+        if (profile.security != SECURITY) { profile.security = SECURITY; repaired = true }
+        if (profile.sni != SNI) { profile.sni = SNI; repaired = true }
+        if (profile.method != ENCRYPTION) { profile.method = ENCRYPTION; repaired = true }
+        if (profile.fingerPrint == "chrome") { profile.fingerPrint = ""; repaired = true }
+        if (repaired) {
+            MmkvManager.encodeServerConfig(guid, profile)
+        }
+        return repaired
+    }
+
+    /**
+     * Ensure the SpiderVPN profile exists, is valid, and is selected.
+     * This is idempotent and safe to call on every launch.
+     * @return the GUID of the ensured profile, or null on failure
+     */
+    fun ensureDefaultProfile(): String? {
+        try {
+            // 1. Find existing or create new
+            var guid = findSpiderVpnGuid()
+            if (guid == null) {
+                guid = createProfile()
+            } else {
+                // 2. Repair corrupted fields (preserves UUID)
+                repairProfile(guid)
+            }
+
+            // 3. Ensure GUID is in the default server list (deduplicated)
+            val list = MmkvManager.decodeServerList("").toMutableList()
+            // Remove duplicates and stale entries
+            val seen = mutableSetOf<String>()
+            val cleaned = list.filter { g ->
+                if (g in seen) false
+                else { seen.add(g); MmkvManager.decodeServerConfig(g) != null }
+            }.toMutableList()
+            if (guid !in cleaned) {
+                cleaned.add(guid)
+            }
+            if (cleaned != list) {
+                MmkvManager.encodeServerList(cleaned, "")
+            }
+
+            // 4. Ensure it's selected
+            val selected = MmkvManager.getSelectServer()
+            if (selected != guid) {
+                MmkvManager.setSelectServer(guid)
+            }
+
+            MmkvManager.encodeSettings(PREF_DEFAULT_PROFILE_DONE, true)
+            return guid
+        } catch (e: Exception) {
+            return null
+        }
+    }
+
+    /**
+     * Run diagnostics on the SpiderVPN profile. Returns a Diagnostic
+     * with no secrets exposed. Used by the Test button.
+     */
+    fun runDiagnostic(): Diagnostic {
+        return try {
+            val guid = findSpiderVpnGuid()
+            if (guid == null) {
+                return Diagnostic(
+                    profileExists = false,
+                    selectedGuidValid = false,
+                    serverCorrect = false,
+                    portCorrect = false,
+                    tlsCorrect = false,
+                    uuidPresent = false,
+                    guid = null,
+                    error = "Profile not found"
+                )
+            }
+
+            val selected = MmkvManager.getSelectServer()
+            val profile = MmkvManager.decodeServerConfig(guid)
+
+            if (profile == null) {
+                return Diagnostic(
+                    profileExists = false,
+                    selectedGuidValid = false,
+                    serverCorrect = false,
+                    portCorrect = false,
+                    tlsCorrect = false,
+                    uuidPresent = false,
+                    guid = guid,
+                    error = "Profile config corrupted"
+                )
+            }
+
+            Diagnostic(
+                profileExists = true,
+                selectedGuidValid = (selected == guid),
+                serverCorrect = (profile.server == SERVER),
+                portCorrect = (profile.serverPort == PORT),
+                tlsCorrect = (profile.security == SECURITY && profile.sni == SNI),
+                uuidPresent = !profile.password.isNullOrEmpty(),
+                guid = guid,
+                error = null
+            )
+        } catch (e: Exception) {
+            Diagnostic(
+                profileExists = false,
+                selectedGuidValid = false,
+                serverCorrect = false,
+                portCorrect = false,
+                tlsCorrect = false,
+                uuidPresent = false,
+                guid = null,
+                error = "Diagnostic failed: ${e.message}"
+            )
+        }
     }
 }

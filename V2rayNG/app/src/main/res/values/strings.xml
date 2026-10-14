@@ -583,5 +583,16 @@
     <string name="spider_reset_while_connected">Disconnect first to reset the UUID</string>
     <string name="spider_save_uuid">Save UUID</string>
     <string name="spider_uuid_saved">UUID saved</string>
+    <string name="spider_test">Test</string>
+    <string name="spider_diagnostic_title">Connection Test</string>
+    <string name="spider_diagnostic_ok">All checks passed ✓</string>
+    <string name="spider_diagnostic_profile">Profile exists</string>
+    <string name="spider_diagnostic_selected">Profile selected</string>
+    <string name="spider_diagnostic_server">Server correct</string>
+    <string name="spider_diagnostic_port">Port correct</string>
+    <string name="spider_diagnostic_tls">TLS correct</string>
+    <string name="spider_diagnostic_uuid">UUID present</string>
+    <string name="spider_diagnostic_fail">✗</string>
+    <string name="spider_diagnostic_pass">✓</string>
 
 </resources>

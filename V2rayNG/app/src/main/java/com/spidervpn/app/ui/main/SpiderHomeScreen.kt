@@ -347,6 +347,28 @@ private fun SpiderVpnTab(
             )
         }
 
+        Spacer(Modifier.height(8.dp))
+
+        // Test button: runs diagnostics and shows detailed status.
+        OutlinedButton(
+            onClick = { onAction(MainAction.RunDiagnostic) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF4ADE80)
+            ),
+            border = BorderStroke(1.dp, Color(0xFF4ADE80).copy(alpha = 0.5f))
+        ) {
+            Text(text = stringResource(R.string.spider_test))
+        }
+
+        // Diagnostic result dialog
+        uiState.diagnostic?.let { diagnostic ->
+            DiagnosticDialog(
+                diagnostic = diagnostic,
+                onDismiss = { onAction(MainAction.DismissDiagnostic) }
+            )
+        }
+
         Spacer(Modifier.height(16.dp))
     }
 }
@@ -724,4 +746,93 @@ internal fun formatDuration(elapsedMs: Long): String {
     val m = (totalSeconds % 3600) / 60
     val s = totalSeconds % 60
     return "%02d:%02d:%02d".format(h, m, s)
+}
+
+/**
+ * Diagnostic result dialog for the Test button (Build #28).
+ * Shows detailed connection checks without exposing secrets.
+ */
+@Composable
+internal fun DiagnosticDialog(
+    diagnostic: com.spidervpn.app.handler.DefaultProfileManager.Diagnostic,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            androidx.compose.material3.Text(
+                text = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_title),
+                color = Color.White
+            )
+        },
+        text = {
+            androidx.compose.foundation.layout.Column {
+                if (diagnostic.error != null) {
+                    androidx.compose.material3.Text(
+                        text = diagnostic.error,
+                        color = Color(0xFFF87171)
+                    )
+                } else {
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_profile),
+                        ok = diagnostic.profileExists
+                    )
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_selected),
+                        ok = diagnostic.selectedGuidValid
+                    )
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_server),
+                        ok = diagnostic.serverCorrect
+                    )
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_port),
+                        ok = diagnostic.portCorrect
+                    )
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_tls),
+                        ok = diagnostic.tlsCorrect
+                    )
+                    DiagnosticRow(
+                        label = androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_uuid),
+                        ok = diagnostic.uuidPresent
+                    )
+                    androidx.compose.foundation.layout.Spacer(
+                        modifier = androidx.compose.ui.Modifier.height(8.dp)
+                    )
+                    androidx.compose.material3.Text(
+                        text = if (diagnostic.allOk)
+                            androidx.compose.ui.res.stringResource(R.string.spider_diagnostic_ok)
+                        else
+                            "Check failed items above",
+                        color = if (diagnostic.allOk) Color(0xFF4ADE80) else Color(0xFFF87171)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                androidx.compose.material3.Text("OK", color = Color(0xFF4ADE80))
+            }
+        },
+        containerColor = Color(0xFF0A0F1E)
+    )
+}
+
+@Composable
+private fun DiagnosticRow(label: String, ok: Boolean) {
+    androidx.compose.foundation.layout.Row(
+        modifier = androidx.compose.ui.Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+    ) {
+        androidx.compose.material3.Text(text = label, color = Color.White)
+        androidx.compose.material3.Text(
+            text = androidx.compose.ui.res.stringResource(
+                if (ok) R.string.spider_diagnostic_pass else R.string.spider_diagnostic_fail
+            ),
+            color = if (ok) Color(0xFF4ADE80) else Color(0xFFF87171)
+        )
+    }
 }
