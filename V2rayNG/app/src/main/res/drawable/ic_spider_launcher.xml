@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Background circle -->
+    <path
+        android:fillColor="#0A0F1E"
+        android:pathData="M54,54m-54,0a54,54 0,1 1,108 0a54,54 0,1 1,-108 0" />
+    <!-- Spider body: head -->
+    <path
+        android:strokeColor="#4ADE80"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M54,38m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0" />
+    <!-- Spider body: abdomen -->
+    <path
+        android:strokeColor="#4ADE80"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M46,52 L46,52 C46,62 50,72 54,72 C58,72 62,62 62,52 C62,46 58,44 54,44 C50,44 46,46 46,52 Z" />
+    <!-- Legs: 4 per side -->
+    <path
+        android:strokeColor="#4ADE80"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:pathData="M46,48 L30,38 M46,56 L28,52 M46,64 L30,66 M46,70 L34,80 M62,48 L78,38 M62,56 L80,52 M62,64 L78,66 M62,70 L74,80" />
+    <!-- Eyes -->
+    <path
+        android:fillColor="#F87171"
+        android:pathData="M50,36m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0 M58,36m-2,0a2,2 0,1 1,4 0a2,2 0,1 1,-4 0" />
+</vector>
