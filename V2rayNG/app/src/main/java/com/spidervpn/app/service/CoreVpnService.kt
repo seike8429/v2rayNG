@@ -78,10 +78,10 @@ class CoreVpnService : VpnService(), ServiceControl {
         NotificationManager.ensureForeground()
         // Always-on VPN restarts from OS deliver intent.action == SERVICE_INTERFACE or null intent.
         // Reset any stuck start lock left by a killed process to allow setupVpnService() to run.
+        // Build #34: Also reset for user-initiated starts - if a previous start crashed
+        // mid-way, the lock remains held and blocks all future connects (tryLockStart: false).
         val isSystemVpnStart = intent == null || intent.action == SERVICE_INTERFACE
-        if (isSystemVpnStart) {
-            unlockStart()
-        }
+        unlockStart() // Always reset stale lock; onStartCommand is serialized on main thread
         if (!tryLockStart()) {
             LogUtil.w(AppConfig.TAG, "StartCore-VPN: Start already in progress")
             return START_NOT_STICKY
