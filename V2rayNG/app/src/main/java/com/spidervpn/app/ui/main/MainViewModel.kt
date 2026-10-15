@@ -859,20 +859,32 @@ class MainViewModel(
 
     /**
      * Collect recent service lifecycle logs via logcat for debugging.
-     * Shows the last 200 lines filtered for the app tag.
+     * Shows the last 500 lines, filtering for relevant tags.
+     * Build #35: Fixed to capture daemon process logs (service runs in :daemon).
      */
     fun viewServiceLogs() {
         viewModelScope.launch(ioDispatcher) {
             try {
+                // Don't filter by -s tag only; grep for our app's logs including daemon process
                 val process = Runtime.getRuntime().exec(
-                    arrayOf("logcat", "-d", "-t", "200", "-s", AppConfig.TAG)
+                    arrayOf("logcat", "-d", "-t", "500")
                 )
-                val logs = process.inputStream.bufferedReader().readText()
+                val allLogs = process.inputStream.bufferedReader().readText()
                 process.waitFor()
-                val displayLogs = if (logs.isBlank()) {
-                    "No logs found. Try tapping Connect first, then view logs."
+                // Filter for our app's logs (main and daemon processes)
+                val filtered = allLogs.lines()
+                    .filter { line ->
+                        line.contains("com.spidervpn.app") ||
+                        line.contains("StartCore-VPN") ||
+                        line.contains("CoreServiceManager") ||
+                        line.contains("V2Ray")
+                    }
+                    .takeLast(100)
+                    .joinToString("\n")
+                val displayLogs = if (filtered.isBlank()) {
+                    "No SpiderVPN logs found.\n\nRaw logcat had ${allLogs.lines().size} lines.\nTry: 1) Tap Connect, 2) View Logs immediately."
                 } else {
-                    logs
+                    filtered
                 }
                 _uiState.update { it.copy(serviceLogs = displayLogs) }
             } catch (e: Exception) {
