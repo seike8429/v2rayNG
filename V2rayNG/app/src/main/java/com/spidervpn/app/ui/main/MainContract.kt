@@ -32,7 +32,9 @@ data class MainUiState(
     /** True when the last UUID save attempt failed validation. */
     val uuidInvalid: Boolean = false,
     /** Diagnostic result from the Test button (null = not run yet). */
-    val diagnostic: com.spidervpn.app.handler.DefaultProfileManager.Diagnostic? = null
+    val diagnostic: com.spidervpn.app.handler.DefaultProfileManager.Diagnostic? = null,
+    /** Service lifecycle logs for debugging (null = not viewed). */
+    val serviceLogs: String? = null
 )
 
 /**
@@ -88,4 +90,10 @@ sealed interface MainAction {
 
     /** Dismiss the diagnostic result dialog. */
     data object DismissDiagnostic : MainAction
+
+    /** View service lifecycle logs (Build #33 diagnostic). */
+    data object ViewLogs : MainAction
+
+    /** Dismiss the logs dialog. */
+    data object DismissLogs : MainAction
 }

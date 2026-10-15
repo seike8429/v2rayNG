@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -365,11 +366,33 @@ private fun SpiderVpnTab(
             Text(text = stringResource(R.string.spider_test))
         }
 
+        Spacer(Modifier.height(8.dp))
+
+        // Logs button: shows service lifecycle logs for debugging (Build #33).
+        OutlinedButton(
+            onClick = { onAction(MainAction.ViewLogs) },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = Color(0xFF60A5FA)
+            ),
+            border = BorderStroke(1.dp, Color(0xFF60A5FA).copy(alpha = 0.5f))
+        ) {
+            Text(text = "View Logs")
+        }
+
         // Diagnostic result dialog
         uiState.diagnostic?.let { diagnostic ->
             DiagnosticDialog(
                 diagnostic = diagnostic,
                 onDismiss = { onAction(MainAction.DismissDiagnostic) }
+            )
+        }
+
+        // Service logs dialog (Build #33)
+        uiState.serviceLogs?.let { logs ->
+            LogsDialog(
+                logs = logs,
+                onDismiss = { onAction(MainAction.DismissLogs) }
             )
         }
 
@@ -839,4 +862,41 @@ private fun DiagnosticRow(label: String, ok: Boolean) {
             color = if (ok) Color(0xFF4ADE80) else Color(0xFFF87171)
         )
     }
+}
+
+@Composable
+internal fun LogsDialog(
+    logs: String,
+    onDismiss: () -> Unit
+) {
+    androidx.compose.material3.AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            androidx.compose.material3.Text(
+                text = "Service Logs",
+                color = Color.White
+            )
+        },
+        text = {
+            androidx.compose.foundation.layout.Column(
+                modifier = androidx.compose.ui.Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp)
+                    .verticalScroll(androidx.compose.foundation.rememberScrollState())
+            ) {
+                androidx.compose.material3.Text(
+                    text = logs,
+                    color = Color(0xFFD1D5DB),
+                    fontSize = 11.sp,
+                    fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                )
+            }
+        },
+        confirmButton = {
+            androidx.compose.material3.TextButton(onClick = onDismiss) {
+                androidx.compose.material3.Text("Close", color = Color(0xFF60A5FA))
+            }
+        },
+        containerColor = Color(0xFF0A0F1E)
+    )
 }

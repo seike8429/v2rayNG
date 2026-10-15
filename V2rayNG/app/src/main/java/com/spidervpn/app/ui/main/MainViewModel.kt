@@ -300,6 +300,8 @@ class MainViewModel(
             MainAction.ResetUuid -> resetUuid()
             MainAction.RunDiagnostic -> runDiagnostic()
             MainAction.DismissDiagnostic -> _uiState.update { it.copy(diagnostic = null) }
+            MainAction.ViewLogs -> viewServiceLogs()
+            MainAction.DismissLogs -> _uiState.update { it.copy(serviceLogs = null) }
             is MainAction.ShareQRCode -> {
                 val bitmap = dataSource.share2QRCode(action.guid)
                 _uiState.update { it.copy(shareQRCodeBitmap = bitmap) }
@@ -852,6 +854,31 @@ class MainViewModel(
             _uiState.update { it.copy(diagnostic = diagnostic) }
             // Refresh UUID display in case profile was recreated
             refreshSelectedGuid()
+        }
+    }
+
+    /**
+     * Collect recent service lifecycle logs via logcat for debugging.
+     * Shows the last 200 lines filtered for the app tag.
+     */
+    fun viewServiceLogs() {
+        viewModelScope.launch(ioDispatcher) {
+            try {
+                val process = Runtime.getRuntime().exec(
+                    arrayOf("logcat", "-d", "-t", "200", "-s", AppConfig.TAG)
+                )
+                val logs = process.inputStream.bufferedReader().readText()
+                process.waitFor()
+                val displayLogs = if (logs.isBlank()) {
+                    "No logs found. Try tapping Connect first, then view logs."
+                } else {
+                    logs
+                }
+                _uiState.update { it.copy(serviceLogs = displayLogs) }
+            } catch (e: Exception) {
+                LogUtil.e(AppConfig.TAG, "Failed to read logs", e)
+                _uiState.update { it.copy(serviceLogs = "Failed to read logs: ${e.message}") }
+            }
         }
     }
 
