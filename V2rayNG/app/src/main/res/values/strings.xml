@@ -573,9 +573,11 @@
     <string name="spider_tab_settings">အသုံးပြုနည်း</string>
     <string name="spider_instructions_title">အသုံးပြုနည်း</string>
     <string name="spider_instructions_step1">၁။ UUID ထည့်ပါ</string>
-    <string name="spider_instructions_step2">၂။ Save နှိပ်ပါ</string>
-    <string name="spider_instructions_step3">၃။ သက်တမ်းကုန်ပါက UUID reset လုပ်ပါ</string>
-    <string name="spider_instructions_note">ပင့်ကူကို နှိပ်ပြီး ချိတ်ဆက်နိုင်ပါသည်။</string>
+    <string name="spider_instructions_step2">၂။ Save ကို နှိပ်ပါ</string>
+    <string name="spider_instructions_step3">၃။ Test ကို နှိပ်ပါ — အားလုံး အစိမ်းရောင် ဖြစ်ရမယ်</string>
+    <string name="spider_instructions_step4">၄။ ပင့်ကူ ပုံကို နှိပ်ပြီး ချိတ်ဆက်ပါ</string>
+    <string name="spider_instructions_step5">၅။ UUID သက်တမ်းကုန်ရင် Reset လုပ်ပြီး အသစ် ထည့်ပါ</string>
+    <string name="spider_instructions_note">ပင့်ကူ ထပ်နှိပ်ရင် ချိတ်ဆက်မှု ပြတ်မယ်။</string>
     <string name="spider_connected">Connected</string>
     <string name="spider_disconnected">Disconnected</string>
     <string name="spider_duration">Duration time</string>

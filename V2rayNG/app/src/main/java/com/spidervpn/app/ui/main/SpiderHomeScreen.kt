@@ -626,6 +626,18 @@ private fun SpiderSettingsTab(
                     color = Color.White,
                     modifier = Modifier.padding(vertical = 6.dp)
                 )
+                Text(
+                    text = stringResource(R.string.spider_instructions_step4),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+                Text(
+                    text = stringResource(R.string.spider_instructions_step5),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = stringResource(R.string.spider_instructions_note),
