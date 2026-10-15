@@ -154,14 +154,18 @@ private fun SpiderVpnTab(
 
     fun onConnectClick() {
         val text = uuidText.trim()
-        if (!UuidValidator.isValid(text)) {
+        // If text field is empty, use the saved UUID from the profile.
+        // The diagnostic confirms the profile has a valid UUID; the text
+        // field is only for entering a NEW UUID, not required for connect.
+        val effectiveUuid = if (text.isEmpty()) uiState.uuid else text
+        if (!UuidValidator.isValid(effectiveUuid)) {
             onAction(MainAction.UpdateUuid(text))
             return
         }
-        if (text != uiState.uuid) {
+        if (text.isNotEmpty() && text != uiState.uuid) {
             onAction(MainAction.UpdateUuid(text))
         }
-        if (isRunning && text != uiState.uuid) {
+        if (isRunning && effectiveUuid != uiState.uuid) {
             onAction(MainAction.RestartService)
         } else {
             onAction(MainAction.ToggleService)
