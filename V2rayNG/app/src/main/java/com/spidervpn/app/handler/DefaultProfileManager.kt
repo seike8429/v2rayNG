@@ -73,22 +73,20 @@ object DefaultProfileManager {
     /**
      * Create a fresh SpiderVPN profile with baked-in server settings.
      */
+    /**
+     * Create a fresh SpiderVPN profile by parsing a template VLESS URL.
+     * This uses the exact same import logic as v2rayNG (VlessFmt.parse),
+     * ensuring 100% compatibility with manually imported configs.
+     * The UUID (password) is cleared for the customer to enter.
+     */
     private fun createProfile(): String {
-        val profile = ProfileItem.create(EConfigType.VLESS).apply {
-            remarks = PROFILE_REMARKS
-            server = SERVER
-            serverPort = PORT
-            password = "" // customer enters their own UUID
-            method = ENCRYPTION
-            network = NETWORK
-            headerType = "none"
-            host = SNI // WS Host header must match SNI for Cloudflare
-            path = WS_PATH
-            security = SECURITY
-            sni = SNI
-            insecure = false
-            // Fingerprint left empty to match working v2rayNG config
-        }
+        // Template URL matching the working v2rayNG config (UUID placeholder)
+        val templateUrl = "vless://00000000-0000-0000-0000-000000000000@cow.uninoka.uk:443" +
+                "?path=%2F&security=tls&encryption=none&type=ws&sni=cow.uninoka.uk#SpiderVPN"
+        val profile = com.spidervpn.app.fmt.VlessFmt.parse(templateUrl)
+            ?: throw IllegalStateException("Failed to parse template VLESS URL")
+        profile.remarks = PROFILE_REMARKS
+        profile.password = "" // customer enters their own UUID
         val guid = Utils.getUuid()
         MmkvManager.encodeServerConfig(guid, profile)
         return guid
