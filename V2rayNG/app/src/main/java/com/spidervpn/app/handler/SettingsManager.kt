@@ -411,7 +411,10 @@ object SettingsManager {
      * @return True if HEV TUN is used, false otherwise.
      */
     fun isUsingHevTun(): Boolean {
-        return MmkvManager.decodeSettingsBool(AppConfig.PREF_USE_HEV_TUNNEL, true)
+        // Build #36: Default to false for SpiderVPN - the hev-socks5-tunnel
+        // native library is not bundled, causing crash in TProxyService.<clinit>
+        // Xray core's built-in TUN is used instead.
+        return MmkvManager.decodeSettingsBool(AppConfig.PREF_USE_HEV_TUNNEL, false)
     }
 
     /**

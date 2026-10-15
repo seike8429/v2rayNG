@@ -303,18 +303,28 @@ class CoreVpnService : VpnService(), ServiceControl {
      * Starts the tun2socks process with the appropriate parameters.
      */
     private fun runTun2socks() {
-        if (SettingsManager.isUsingHevTun()) {
-            tun2SocksService = TProxyService(
-                context = applicationContext,
-                vpnInterface = mInterface,
-                isRunningProvider = { isRunning },
-                restartCallback = { runTun2socks() }
-            )
-        } else {
+        // Build #36: Wrap in try-catch - TProxyService crashes if hev-socks5-tunnel
+        // native library is missing (UnsatisfiedLinkError in <clinit>)
+        try {
+            if (SettingsManager.isUsingHevTun()) {
+                tun2SocksService = TProxyService(
+                    context = applicationContext,
+                    vpnInterface = mInterface,
+                    isRunningProvider = { isRunning },
+                    restartCallback = { runTun2socks() }
+                )
+            } else {
+                tun2SocksService = null
+            }
+
+            tun2SocksService?.startTun2Socks()
+        } catch (e: UnsatisfiedLinkError) {
+            LogUtil.e(AppConfig.TAG, "StartCore-VPN: hev-socks5-tunnel native library missing, skipping tun2socks", e)
+            tun2SocksService = null
+        } catch (e: Exception) {
+            LogUtil.e(AppConfig.TAG, "StartCore-VPN: Failed to start tun2socks", e)
             tun2SocksService = null
         }
-
-        tun2SocksService?.startTun2Socks()
     }
 
     private fun stopAllService(isForced: Boolean = true) {
