@@ -81,6 +81,8 @@ object DefaultProfileManager {
             password = "" // customer enters their own UUID
             method = ENCRYPTION
             network = NETWORK
+            headerType = "none"
+            host = SNI // WS Host header must match SNI for Cloudflare
             path = WS_PATH
             security = SECURITY
             sni = SNI
@@ -103,6 +105,7 @@ object DefaultProfileManager {
         if (profile.server != SERVER) { profile.server = SERVER; repaired = true }
         if (profile.serverPort != PORT) { profile.serverPort = PORT; repaired = true }
         if (profile.network != NETWORK) { profile.network = NETWORK; repaired = true }
+        if (profile.host != SNI) { profile.host = SNI; repaired = true }
         if (profile.path != WS_PATH) { profile.path = WS_PATH; repaired = true }
         if (profile.security != SECURITY) { profile.security = SECURITY; repaired = true }
         if (profile.sni != SNI) { profile.sni = SNI; repaired = true }
