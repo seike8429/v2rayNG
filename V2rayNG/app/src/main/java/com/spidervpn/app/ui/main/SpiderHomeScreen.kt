@@ -570,7 +570,7 @@ private fun LocationPinIcon(modifier: Modifier = Modifier) {
 }
 
 // ---------------------------------------------------------------------------
-// Settings tab: about + UUID reset. No server/network settings exposed.
+// Instructions tab: Burmese step-by-step usage guide + UUID reset.
 // ---------------------------------------------------------------------------
 @Composable
 private fun SpiderSettingsTab(
@@ -592,7 +592,7 @@ private fun SpiderSettingsTab(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = stringResource(R.string.spider_app_name),
+            text = stringResource(R.string.spider_instructions_title),
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White,
@@ -609,14 +609,26 @@ private fun SpiderSettingsTab(
         ) {
             Column(modifier = Modifier.padding(18.dp)) {
                 Text(
-                    text = stringResource(R.string.spider_about),
+                    text = stringResource(R.string.spider_instructions_step1),
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    color = Color.White,
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+                Text(
+                    text = stringResource(R.string.spider_instructions_step2),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(vertical = 6.dp)
+                )
+                Text(
+                    text = stringResource(R.string.spider_instructions_step3),
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.padding(vertical = 6.dp)
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.spider_about_text),
+                    text = stringResource(R.string.spider_instructions_note),
                     fontSize = 14.sp,
                     color = SpiderTextDim,
                     lineHeight = 20.sp
@@ -712,28 +724,47 @@ private fun SpiderNavItem(
     }
 }
 
-/** Shield-with-check glyph for the VPN tab. */
+/** Spider glyph for the VPN tab (replaces shield). */
 @Composable
 private fun VpnTabIcon(modifier: Modifier = Modifier, tint: Color) {
     Canvas(modifier = modifier) {
         val w = size.width
         val h = size.height
-        val shield = Path().apply {
-            moveTo(w * 0.5f, h * 0.06f)
-            lineTo(w * 0.88f, h * 0.22f)
-            lineTo(w * 0.88f, h * 0.52f)
-            cubicTo(w * 0.88f, h * 0.78f, w * 0.68f, h * 0.90f, w * 0.5f, h * 0.96f)
-            cubicTo(w * 0.32f, h * 0.90f, w * 0.12f, h * 0.78f, w * 0.12f, h * 0.52f)
-            lineTo(w * 0.12f, h * 0.22f)
-            close()
+        val cx = w / 2f
+        // Body: head (top circle) + abdomen (bottom oval)
+        drawCircle(
+            color = tint,
+            radius = w * 0.14f,
+            center = androidx.compose.ui.geometry.Offset(cx, h * 0.32f),
+            style = Stroke(width = w * 0.07f, cap = StrokeCap.Round)
+        )
+        drawOval(
+            color = tint,
+            topLeft = androidx.compose.ui.geometry.Offset(cx - w * 0.16f, h * 0.48f),
+            size = androidx.compose.ui.geometry.Size(w * 0.32f, h * 0.38f),
+            style = Stroke(width = w * 0.07f, cap = StrokeCap.Round)
+        )
+        // 8 legs: 4 per side
+        val legStarts = listOf(0.38f, 0.48f, 0.58f, 0.68f)
+        for ((i, yf) in legStarts.withIndex()) {
+            val spread = 0.12f + i * 0.06f
+            // Left legs
+            drawLine(
+                color = tint,
+                start = androidx.compose.ui.geometry.Offset(cx - w * 0.10f, h * yf),
+                end = androidx.compose.ui.geometry.Offset(cx - w * (0.28f + spread), h * (yf - 0.08f)),
+                strokeWidth = w * 0.06f,
+                cap = StrokeCap.Round
+            )
+            // Right legs
+            drawLine(
+                color = tint,
+                start = androidx.compose.ui.geometry.Offset(cx + w * 0.10f, h * yf),
+                end = androidx.compose.ui.geometry.Offset(cx + w * (0.28f + spread), h * (yf - 0.08f)),
+                strokeWidth = w * 0.06f,
+                cap = StrokeCap.Round
+            )
         }
-        drawPath(shield, tint, style = Stroke(width = w * 0.08f, cap = StrokeCap.Round))
-        val check = Path().apply {
-            moveTo(w * 0.34f, h * 0.52f)
-            lineTo(w * 0.46f, h * 0.64f)
-            lineTo(w * 0.68f, h * 0.38f)
-        }
-        drawPath(check, tint, style = Stroke(width = w * 0.09f, cap = StrokeCap.Round))
     }
 }
 
