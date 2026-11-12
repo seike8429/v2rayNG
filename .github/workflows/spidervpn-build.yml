@@ -48,3 +48,4 @@ jobs:
       with:
         name: SpiderVPN-APK
         path: V2rayNG/app/build/outputs/apk/playstore/debug/*.apk
+        retention-days: 7
